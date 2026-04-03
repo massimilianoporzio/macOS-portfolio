@@ -102,7 +102,7 @@
             @apply hover:bg-black/5 transition-colors;
 
             &.active {
-                @apply bg-black/10;
+                @apply bg-black/20;
             }
         }
     }

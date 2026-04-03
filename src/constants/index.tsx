@@ -254,6 +254,34 @@ const gallery: GalleryItem[] = [
     },
 ];
 
+export interface ThemeOption {
+    id: number;
+    name: string;
+    icon: string;
+    value: "light" | "dark" | "system";
+}
+
+const themeOptions: ThemeOption[] = [
+    {
+        id: 1,
+        name: "Light",
+        icon: "☀️",
+        value: "light",
+    },
+    {
+        id: 2,
+        name: "Dark",
+        icon: "🌙",
+        value: "dark",
+    },
+    {
+        id: 3,
+        name: "System",
+        icon: "💻",
+        value: "system",
+    },
+];
+
 export {
     navLinks,
     navIcons,
@@ -263,6 +291,7 @@ export {
     socials,
     photosLinks,
     gallery,
+    themeOptions,
 };
 
 export interface FileSystemItem {
