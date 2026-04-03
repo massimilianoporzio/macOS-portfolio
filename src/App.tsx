@@ -1,4 +1,4 @@
-import Navbar from '#components/Navbar';
+import {Navbar,Welcome} from '#components';
 
 const App = () => {
     return (
@@ -8,6 +8,7 @@ const App = () => {
                <div className="wallpaper wallpaper-dark" />
            </div>
            <Navbar />
+           <Welcome />
        </main>
     )
 }
