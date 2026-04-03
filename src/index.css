@@ -2,15 +2,70 @@
 
 @import "tailwindcss";
 
-html,
-body {
-    width: 100dvw;
-    overflow: hidden;
-    height: 100dvh;
-    background-image: url("/images/Tahoe-Wallpaper.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+@layer base {
+    :root {
+        --bg-wallpaper: url("/images/Tahoe-Wallpaper.png");
+        color-scheme: light;
+    }
+
+    .dark {
+        --bg-wallpaper: url("/images/Tahoe-Beach-Night.png");
+        color-scheme: dark;
+    }
+
+    html,
+    body {
+        width: 100dvw;
+        height: 100dvh;
+        overflow: hidden;
+        background-color: transparent;
+    }
+
+    /* Preload hidden images to prevent flicker */
+    body::after {
+        content: url("/images/Tahoe-Wallpaper.png") url("/images/Tahoe-Beach-Night.png");
+        display: none;
+    }
+
+    /* Wallpaper Layers */
+    .wallpaper-container {
+        position: fixed;
+        inset: 0;
+        z-index: -10;
+        pointer-events: none;
+    }
+
+    .wallpaper {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: opacity;
+    }
+
+    .wallpaper-light {
+        background-image: url("/images/Tahoe-Wallpaper.png");
+        opacity: 1;
+    }
+
+    .wallpaper-dark {
+        background-image: url("/images/Tahoe-Beach-Night.png");
+        opacity: 0;
+    }
+
+    .dark .wallpaper-light {
+        opacity: 0;
+    }
+
+    .dark .wallpaper-dark {
+        opacity: 1;
+    }
+
+    main {
+        @apply w-dvw h-dvh overflow-hidden;
+    }
 }
 
 @theme {
@@ -31,14 +86,40 @@ body {
     @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
 }
 
-@layer base {
-    main {
-        @apply w-dvw h-dvh overflow-hidden;
+@layer components {
+    nav {
+        @apply flex justify-between items-center bg-white/50 backdrop-blur-3xl p-2 px-5 select-none text-black;
+    }
+
+    .dark nav {
+        @apply bg-black/50 text-white;
+    }
+
+    .theme-selector-dropdown {
+        @apply bg-white/50 text-black border-black/10 shadow-lg;
+
+        button {
+            @apply hover:bg-black/5 transition-colors;
+
+            &.active {
+                @apply bg-black/10;
+            }
+        }
+    }
+
+    .dark .theme-selector-dropdown {
+        @apply bg-black/50 text-white border-white/10;
+
+        button {
+            @apply hover:bg-white/10;
+
+            &.active {
+                @apply bg-white/20;
+            }
+        }
     }
 
     nav {
-        @apply flex justify-between items-center bg-white/50 backdrop-blur-3xl p-2 px-5 select-none;
-
         div {
             @apply flex items-center max-sm:w-full max-sm:justify-center gap-5;
 
@@ -56,14 +137,16 @@ body {
         }
 
         time {
-            @apply text-sm font-medium text-black;
+            @apply text-sm font-medium;
         }
     }
-}
 
-@layer components {
-    .icon {
-        @apply p-1 hover:bg-gray-200 rounded hover:cursor-default;
+    .icon-hover {
+        @apply p-1 hover:bg-black/10 rounded-md transition-colors cursor-pointer;
+    }
+
+    .dark .icon-hover {
+        @apply hover:bg-white/10 invert;
     }
 
     #welcome {
