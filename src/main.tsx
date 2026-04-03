@@ -1,5 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import "@fontsource-variable/georama";
+import "@fontsource-variable/georama/wght-italic.css";
+import "@fontsource-variable/roboto-mono";
 import './index.css'
 import App from './App.tsx'
 
