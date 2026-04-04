@@ -10,10 +10,12 @@ const FONT_WEIGHT: Record<FontWeightKey, { min: number; max: number; default: nu
 }
 
 const renderText =
-    (text: string, className: string, baseHeight: number = 400): JSX.Element[] => {
+    (text: string, className: string, type: FontWeightKey): JSX.Element[] => {
+    const baseWeight = FONT_WEIGHT[type].default;
+
     return [...text].map((char, i) => (
         <span key={i} className={className} style={{
-            fontVariationSettings: `'wght' ${baseHeight}`,
+            fontVariationSettings: `'wght' ${baseWeight}`,
         }}>
         {char === ' ' ? '\u00A0' : char}
         </span>
@@ -25,7 +27,7 @@ const setupTextHover = (container: HTMLElement | null, type: FontWeightKey) => {
     const letters = container.querySelectorAll('span');
     const { min, max } = FONT_WEIGHT[type];
 
-    const animateLetter = (letter: HTMLElement, weight: number, duration: number = 0.25) => {
+    const animateLetter = (letter: Element, weight: number, duration: number = 0.25) => {
         return gsap.to(letter, {
             duration,
             ease: 'power2.out',
@@ -33,27 +35,50 @@ const setupTextHover = (container: HTMLElement | null, type: FontWeightKey) => {
         });
     }
 
+    interface LetterData {
+        el: Element;
+        centerX: number;
+    }
+
+    let letterData: LetterData[] = [];
+
+    const updatePositions = () => {
+        const { left: containerLeft } = container.getBoundingClientRect();
+        letterData = Array.from(letters).map((letter) => {
+            const { left, width } = letter.getBoundingClientRect();
+            return {
+                el: letter,
+                centerX: left - containerLeft + width / 2
+            };
+        });
+    };
+
+    updatePositions();
+
     const handleMouseMove = (e: globalThis.MouseEvent) => {
-        const { left } = container.getBoundingClientRect();
-        const x = e.clientX - left;
-        letters.forEach((letter) => {
-            const { left: l, width: w } = letter.getBoundingClientRect();
-            const distance = Math.abs(x - (l - left + w / 2));
+        const { left: containerLeft } = container.getBoundingClientRect();
+        const x = e.clientX - containerLeft;
+
+        letterData.forEach(({ el, centerX }) => {
+            const distance = Math.abs(x - centerX);
             const intensity = Math.exp(-(distance ** 2) / 2000);
 
-            animateLetter(letter, min + (max - min) * intensity);
+            animateLetter(el, min + (max - min) * intensity);
         });
     }
 
     const handleMouseLeave = () => {
-        letters.forEach((letter) => {
-            animateLetter(letter, FONT_WEIGHT[type].default,0.3);
+        letterData.forEach(({ el }) => {
+            animateLetter(el, FONT_WEIGHT[type].default, 0.3);
         });
     }
 
+    window.addEventListener('resize', updatePositions);
     container.addEventListener('mousemove', handleMouseMove);
     container.addEventListener('mouseleave', handleMouseLeave);
+
     return () => {
+        window.removeEventListener('resize', updatePositions);
         container.removeEventListener('mousemove', handleMouseMove);
         container.removeEventListener('mouseleave', handleMouseLeave);
     }
@@ -77,11 +102,11 @@ const Welcome = () => {
         <section id="welcome">
             <p ref={subtitleRef}>
                 {renderText("Hey, I'm Massimiliano! Welcome to my",
-                    "text-3xl font-georama", 200
+                    "text-3xl font-georama", "subtitle"
                 )} </p>
             <h1 ref={titleRef} className="mt-7">{
                 renderText("portfolio",
-                    "text-9xl italic font-georama", 400)
+                    "text-9xl italic font-georama", "title")
             }</h1>
 
             <div className="small-screen">
